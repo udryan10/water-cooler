@@ -13,7 +13,9 @@ server.listen(port);
 app.use(bodyParser.text());
 console.log("listening on port: " + port);
 
-function speak(text) {
+function speak(text,socket) {
+  var ip = socket.request.connection.remoteAddress;
+//console.log(ip + ' - ' + text);
   io.emit('speak', text);
 }
 
@@ -26,7 +28,7 @@ io.sockets.on('connection',function(socket) {
   io.emit('connection_change',sessionCount);
 
   socket.on('text_entered',function(data) {
-    speak(data);
+    speak(data,socket);
   });
 
   socket.on('disconnect', function() {
@@ -55,7 +57,7 @@ app.use(express.static(__dirname + '/public'));
 
 app.post('/', function(req, res){
   var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  console.log(ip + ' - ' + req.body);
+  //console.log(ip + ' - ' + req.body);
   speak(req.body);
   res.status(200);
   res.send();
