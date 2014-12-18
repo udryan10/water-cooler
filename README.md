@@ -9,6 +9,11 @@ Super simple application leveraging `socket.io` and `express` that allows users 
 ### Run
 ``` sudo node server.js ```
 
+## Deploying:
+### Helper Script
+``` ./deploy.sh ```
+### Manually
+``` docker run -d --name "water-cooler" -p 80:80 udryan10/water-cooler ```
 
 ## API Request
 ```curl -XPOST -H 'Content-Type: text/plain' http://localhost:8000/ -d 'this is my message'```
