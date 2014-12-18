@@ -1,0 +1,74 @@
+@import url('http://fonts.googleapis.com/css?family=Open+Sans:200,300');
+
+body {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+	color:#fff;
+  	background-color:#333;
+  	font-family: 'Open Sans',Arial,Helvetica,Sans-Serif;
+}
+
+a:link, a:visited {
+	color:#eee;
+}
+
+.block {
+	background-color:rgba(0,0,0,0.6);
+  	padding-left:12px;
+  	padding-right:12px;
+  	padding-bottom:12px;
+}
+
+.block-sm {
+    height:180px;
+}
+
+.btn-flat {
+  	font-family: 'Open Sans',Arial,Helvetica,Sans-Serif;
+	border-radius:0px;
+  	border-width:0;
+  	background-image:none;
+  	padding:16px;
+  	margin:0 auto;
+  	margin-top:15px;
+  	width:70%;
+    font-size:20pt;
+}
+
+/* mini carousel */
+.carousel-inner img {
+	width:100%;
+  	height:100%;
+}
+
+#myCarousel {
+	font-size:90%;
+}
+
+.carousel-controls-mini {
+	margin-left:42%;
+}
+
+.carousel-controls-mini > a {
+	border:1px solid #eee;
+  	margin:1px;
+  	width:20px;
+    display:block;
+  	float:left;
+    text-align:center;
+}
+
+#carousel-bounding-box {
+  margin:0 auto;
+  width:300px;
+}
+
+.vertical-center {
+  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+  min-height: 100vh; /* These two lines are counted as one :-)       */
+
+  display: flex;
+  align-items: center;
+}

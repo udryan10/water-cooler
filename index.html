@@ -1,0 +1,90 @@
+<html>
+  <head>
+    <title>Water Cooler</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/custom/index.css" rel="stylesheet" media="screen">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/jquery.js"></script>
+    <script type ="text/javascript">
+       $(document).ready(function(){
+         $('#host').html(window.location.origin);
+         socket = io.connect(window.location.origin);
+         $('#lol').keypress(function (e) {
+           if (e.which == 13) {
+             send_text($('#lol').val());
+           }
+         });
+
+         $('#speak_button').click(function() {
+           send_text();
+         });
+
+
+         function talk(text) {
+          var msg = new SpeechSynthesisUtterance(text);
+          msg.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.name == 'Google UK English Male'; })[0];
+          if( ! $('#mute_checkbox').is(':checked'))
+          {
+            window.speechSynthesis.speak(msg);
+          }
+         }
+
+         function send_text() {
+          console.log($('#lol').val());
+          socket.emit('text_entered',$('#lol').val());
+          $('#lol').val('');
+         }
+
+         socket.on('speak', function(data) {
+           talk(data);
+         });
+
+         socket.on('connection_change', function(data) {
+           $('#connection_count').html(data);
+         });
+       });
+    </script>
+  </head>
+  <body>
+    <div class="container vertical-center">
+      <div class="col-lg-3 text-center"></div>
+      <div class="col-lg-6 text-center">
+        <div class="row-fluid">
+          <div class="block">
+            <div class="pull-center">
+              <h1>What's on your mind?</h1>
+              <div class="input-group">
+                <input type="text" id="lol" class="form-control input-sm chat-input" placeholder="Write your message here..." />
+                <span class="input-group-btn">
+                  <a id="speak_button" class="btn btn-primary btn-sm">
+                    <span class="glyphicon glyphicon-comment"></span>
+                    Speak
+                  </a>
+                </span>
+                <span class="input-group-btn" data-toggle="collapse" data-target="#infobox">
+                  <a href="#" class="btn btn-info btn-sm">
+                    <span class="glyphicon glyphicon-info-sign"></span>
+                    Info
+                  </a>
+                </span>
+              </div>
+              <div id="options_box">
+                <span style="text-align: left" class="checkbox">
+                  <label>
+                    <input id="mute_checkbox" type="checkbox"> Mute Audio
+                  </label>
+                </span>
+                # Connected: <span style="text-align: right" id="connection_count"></span>
+              </div>
+              <div id="infobox" class="collapse">
+                 POST a message with a content type and the text will be broadcasted to all browsers: curl -XPOST -H 'Content-Type: text/plain' <span id="host"></span> -d 'this is my message'
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>
