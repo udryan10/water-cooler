@@ -28,6 +28,7 @@
           {
             window.speechSynthesis.speak(msg);
           }
+          $('#text_transcript').hide().html(text).fadeIn();
          }
 
          function send_text() {
@@ -47,8 +48,9 @@
     </script>
   </head>
   <body>
-    <div class="container vertical-center">
-      <div class="col-lg-3 text-center"></div>
+    <div class="container">
+      <div class ="row">
+      <div class="col-lg-3"></div>
       <div class="col-lg-6 text-center">
         <div class="row-fluid">
           <div class="block">
@@ -83,6 +85,12 @@
             </div>
           </div>
         </div>
+        <div class="row-fluid"> &nbsp; </div>
+        <div class="row">
+          <div id="text_transcript" class="col-lg-12"></div>
+        </div>
+      </div>
+      <div class="col-lg-3"></div>
       </div>
     </div>
     <script src="js/bootstrap.min.js"></script>
