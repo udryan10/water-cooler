@@ -1,6 +1,6 @@
 var port = 80;
 var express = require('express');
-var bodyParser = require('body-parser');  
+var bodyParser = require('body-parser');
 var app = express()
   , http = require('http')
   , server = http.createServer(app)
@@ -14,7 +14,7 @@ app.use(bodyParser.text());
 console.log("listening on port: " + port);
 
 function speak(text,socket) {
-  var ip = socket.request.connection.remoteAddress;
+var ip = socket.request.connection.remoteAddress;
 //console.log(ip + ' - ' + text);
   io.emit('speak', text);
 }
@@ -57,8 +57,9 @@ app.use(express.static(__dirname + '/public'));
 
 app.post('/', function(req, res){
   var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  var voice = req.headers['x-voice'] || 'Google UK English Male'
   //console.log(ip + ' - ' + req.body);
-  speak(req.body);
+  speak({message: req.body, voice: voice}, {request:{connection:{remoteAddress: ip}}});
   res.status(200);
   res.send();
 });

@@ -7,90 +7,135 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/jquery.js"></script>
     <script type ="text/javascript">
-       $(document).ready(function(){
-         $('#host').html(window.location.origin);
-         socket = io.connect(window.location.origin);
-         $('#lol').keypress(function (e) {
-           if (e.which == 13) {
-             send_text($('#lol').val());
-           }
-         });
 
-         $('#speak_button').click(function() {
-           send_text();
-         });
+    // voices are loaded async but this event is fired when they are ready
+    window.speechSynthesis.onvoiceschanged = function() {
+      var html = "";
+      window.speechSynthesis.getVoices().forEach(function(voice) {
+        var re = new RegExp('^en');
+        if(voice.lang.match(re))
+        {
+          html += "<option value='"+voice.name+"'>"+ voice.name + " - " + voice.lang + "</option>"
+        }
+
+     });
+
+     $('#voice_selector').html(html);
+    };
+
+   $(document).ready(function(){
+
+     $('#host').html(window.location.origin);
+     socket = io.connect(window.location.origin);
+     $('#lol').keypress(function (e) {
+       if (e.which == 13) {
+         send_text($('#lol').val());
+       }
+     });
+
+     $('#speak_button').click(function() {
+       send_text();
+     });
 
 
-         function talk(text) {
-          var msg = new SpeechSynthesisUtterance(text);
-          msg.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.name == 'Google UK English Male'; })[0];
-          if( ! $('#mute_checkbox').is(':checked'))
-          {
-            window.speechSynthesis.speak(msg);
-          }
-          $('#text_transcript').hide().html(text).fadeIn();
-         }
+     function talk(data) {
 
-         function send_text() {
-          console.log($('#lol').val());
-          socket.emit('text_entered',$('#lol').val());
-          $('#lol').val('');
-         }
+      var msg = new SpeechSynthesisUtterance(data.message);
+      voice_object = speechSynthesis.getVoices().filter(function(voice) { return voice.name == data.voice; })[0];
+      msg.voice = voice_object;
+      if( ! $('#mute_checkbox').is(':checked'))
+      {
+        window.speechSynthesis.speak(msg);
+      }
+      $('#text_transcript').hide().html(data.message).fadeIn();
+     }
 
-         socket.on('speak', function(data) {
-           talk(data);
-         });
+     function send_text() {
+      socket.emit('text_entered',{message: $('#lol').val(),voice: $('#voice_selector').val()});
+      $('#lol').val('');
+     }
 
-         socket.on('connection_change', function(data) {
-           $('#connection_count').html(data);
-         });
-       });
-    </script>
+     socket.on('speak', function(data) {
+       talk(data);
+     });
+
+     socket.on('connection_change', function(data) {
+       $('#connection_count').html(data);
+     });
+   });
+  </script>
   </head>
   <body>
     <div class="container">
       <div class ="row">
-      <div class="col-lg-3"></div>
-      <div class="col-lg-6 text-center">
-        <div class="row-fluid">
-          <div class="block">
-            <div class="pull-center">
-              <h1>What's on your mind?</h1>
-              <div class="input-group">
-                <input type="text" id="lol" class="form-control input-sm chat-input" placeholder="Write your message here..." />
-                <span class="input-group-btn">
-                  <a id="speak_button" class="btn btn-primary btn-sm">
-                    <span class="glyphicon glyphicon-comment"></span>
-                    Speak
-                  </a>
-                </span>
-                <span class="input-group-btn" data-toggle="collapse" data-target="#infobox">
-                  <a href="#" class="btn btn-info btn-sm">
-                    <span class="glyphicon glyphicon-info-sign"></span>
-                    Info
-                  </a>
-                </span>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6 text-center">
+          <div class="row-fluid">
+            <div class="col-lg-12 block">
+              <div class="row-fluid">
+                <div class="col-lg-12">
+                  <div class="pull-center">
+                    <h1>What's on your mind?</h1>
+                    <div class="input-group">
+                      <input type="text" id="lol" class="form-control input-sm chat-input" placeholder="Write your message here..." />
+                      <span class="input-group-btn">
+                        <a id="speak_button" class="btn btn-primary btn-sm">
+                          <span class="glyphicon glyphicon-comment"></span>
+                          Speak
+                        </a>
+                      </span>
+                      <span class="input-group-btn" data-toggle="collapse" data-target="#infobox">
+                        <a href="#" class="btn btn-info btn-sm">
+                          <span class="glyphicon glyphicon-info-sign"></span>
+                          Info
+                        </a>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div id="options_box">
-                <span style="text-align: left" class="checkbox">
-                  <label>
-                    <input id="mute_checkbox" type="checkbox"> Mute Audio
-                  </label>
-                </span>
-                # Connected: <span style="text-align: right" id="connection_count"></span>
-              </div>
-              <div id="infobox" class="collapse">
-                 POST a message with a content type and the text will be broadcasted to all browsers: curl -XPOST -H 'Content-Type: text/plain' <span id="host"></span> -d 'this is my message'
+              <div class="row-fluid"><div class="col-lg-12"> &nbsp;</div></div>
+              <div class="row-fluid">
+                <div class="col-lg-12">
+                  <div class="pull-center">
+                    <div id="options_box">
+                      <div class="row-fluid">
+                        <div class="col-lg-3">
+                          <span style="text-align: left" class="checkbox">
+                            <label>
+                              <input id="mute_checkbox" type="checkbox"> Mute Audio
+                            </label>
+                          </span>
+                        </div>
+                        <div class="col-lg-4">&nbsp;</div>
+                        <div class="col-lg-5">
+                          <select id="voice_selector" class="form-control"></select>
+                        </div>
+                      </div>
+                      <div class="row-fluid">
+                        <div class="col-lg-12">
+                          # Connected: <span style="text-align: center" id="connection_count"></span>
+                        </div>
+                      </div>
+                      <div class="row-fluid">
+                        <div class="col-lg-12">
+                          <div id="infobox" class="collapse">
+                             POST a message with a content type and the text will be broadcasted to all browsers: curl -XPOST -H 'Content-Type: text/plain' <span id="host"></span> -d 'this is my message'
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          <div class="row-fluid"> <div class="col-lg-12"> &nbsp; </div> </div>
+          <div class="row-fluid">
+            <div id="text_transcript" class="col-lg-12"></div>
+          </div>
         </div>
-        <div class="row-fluid"> &nbsp; </div>
-        <div class="row">
-          <div id="text_transcript" class="col-lg-12"></div>
-        </div>
-      </div>
-      <div class="col-lg-3"></div>
+        <div class="col-lg-3"></div>
       </div>
     </div>
     <script src="js/bootstrap.min.js"></script>
