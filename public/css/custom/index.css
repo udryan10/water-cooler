@@ -72,3 +72,6 @@ a:link, a:visited {
   display: flex;
   align-items: center;
 }
+code {
+    white-space: pre-wrap;
+}
