@@ -6,6 +6,7 @@ var app = express()
   , server = http.createServer(app)
   , io = require('socket.io').listen(server)
 var sessionCount = 0;
+var chats = [];
 
 // listen on port
 server.listen(port);
@@ -19,6 +20,19 @@ var ip = socket.request.connection.remoteAddress;
   io.emit('speak', text);
 }
 
+function log(text) {
+  var now = new Date();
+  var time = [ now.getHours(), now.getMinutes() ];
+  var prettyTime = time.join(":");
+
+  chats.unshift(prettyTime + " " + text["message"]);
+  console.log(chats);
+
+  if (chats.length > 5) {
+    chats.pop();
+  }
+}
+
 // register listen events on connection
 io.sockets.on('connection',function(socket) {
   sessionCount++;
@@ -29,6 +43,8 @@ io.sockets.on('connection',function(socket) {
 
   socket.on('text_entered',function(data) {
     speak(data,socket);
+    log(data);
+    io.emit('new_chat', chats);
   });
 
   socket.on('disconnect', function() {

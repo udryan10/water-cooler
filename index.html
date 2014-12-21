@@ -37,9 +37,7 @@
        send_text();
      });
 
-
      function talk(data) {
-
       var msg = new SpeechSynthesisUtterance(data.message);
       voice_object = speechSynthesis.getVoices().filter(function(voice) { return voice.name == data.voice; })[0];
       msg.voice = voice_object;
@@ -47,7 +45,6 @@
       {
         window.speechSynthesis.speak(msg);
       }
-      $('#text_transcript').hide().html(data.message).fadeIn();
      }
 
      function send_text() {
@@ -57,6 +54,14 @@
 
      socket.on('speak', function(data) {
        talk(data);
+     });
+
+     socket.on('new_chat', function(data) {
+       var chatHTML = [];
+       for (var i = 0; i < data.length; i++) {
+         chatHTML.push('<span>' + data[i] + '</span><br />');
+       }
+       $('#text_transcript').html(chatHTML.join(""));
      });
 
      socket.on('connection_change', function(data) {
@@ -132,7 +137,7 @@
           </div>
           <div class="row-fluid"> <div class="col-lg-12"> &nbsp; </div> </div>
           <div class="row-fluid">
-            <div id="text_transcript" class="col-lg-12"></div>
+            <div id="text_transcript" style="text-align:left" class="col-lg-12"></div>
           </div>
         </div>
         <div class="col-lg-3"></div>
