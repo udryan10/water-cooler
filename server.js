@@ -31,6 +31,7 @@ function log(text) {
   if (chats.length > 5) {
     chats.pop();
   }
+  io.emit('new_chat', chats);
 }
 
 // register listen events on connection
@@ -76,6 +77,7 @@ app.post('/', function(req, res){
   var voice = req.headers['x-voice'] || 'Google UK English Male'
   //console.log(ip + ' - ' + req.body);
   speak({message: req.body, voice: voice}, {request:{connection:{remoteAddress: ip}}});
+  log({message: req.body});
   res.status(200);
   res.send();
 });
