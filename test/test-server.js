@@ -13,10 +13,6 @@ describe("water-cooler",function(){
   it('Should broadcast a new session once they connect',function(done){
     var client = io.connect(socketURL, options);
 
-    client.on('connect',function(data){
-      client.emit('connection_change', "1");
-    });
-
     client.on('connection_change',function(sessionCount){
       sessionCount.should.be.a.Number;
       sessionCount.should.equal(1);
