@@ -16,4 +16,4 @@ Super simple application leveraging `socket.io` and `express` that allows users 
 ``` docker run -d --name "water-cooler" -p 80:80 udryan10/water-cooler ```
 
 ## API Request
-```curl -XPOST -H 'Content-Type: text/plain' http://localhost:8000/ -d 'this is my message'```
+```curl -XPOST -H 'Content-Type: text/plain' -H 'X-Voice: Junior' http://localhost:8000/ -d 'this is my message'```
